@@ -36,7 +36,20 @@ func TestApi(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 		return
 	}
-	fmt.Println(data.TokenObj.Expiry)
+	srv := GetService(data.TokenObj)
+	user := "me"
+	req, err := srv.Users.Labels.List(user).Do()
+	if err != nil {
+		fmt.Println("Unable to retrieve labels. %v", err)
+	}
+	if len(req.Labels) > 0 {
+		fmt.Print("Labels:\n")
+		for _, l := range req.Labels {
+			fmt.Printf("- %s\n", l.Name)
+		}
+	} else {
+		fmt.Print("No labels found.")
+	}
 	w.Write([]byte("Test complete!"))
 }
 
